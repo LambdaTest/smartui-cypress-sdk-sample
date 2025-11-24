@@ -120,10 +120,184 @@ The default configuration includes:
 - Viewports: 1920, 1366, 360 (full page screenshots by default)
 - Optional: `waitForPageRender` and `waitForTimeout` for slow-loading pages
 
+## Best Practices
+
+### Screenshot Naming
+
+- Use descriptive, unique names for each screenshot
+- Include test context (e.g., `login-form-filled`, `checkout-step-2`)
+- Avoid special characters
+- Use consistent naming conventions
+
+### When to Take Screenshots
+
+- After critical user interactions
+- Before and after form submissions
+- At different viewport sizes
+- After page state changes
+
+### Cypress-Specific Tips
+
+- Use `cy.wait()` before screenshots for dynamic content
+- Take screenshots after `cy.visit()` completes
+- Use `cy.viewport()` to test responsive designs
+- Combine with Cypress commands for better test flow
+
+### Example: Screenshot After Interaction
+
+```javascript
+describe('Homepage Tests', () => {
+  beforeEach(() => {
+    cy.visit('https://www.lambdatest.com')
+  })
+
+  it('Homepage Visual Test', () => {
+    cy.smartuiSnapshot('homepage-initial')
+    
+    // Interact with page
+    cy.get('#search').type('Cypress')
+    cy.wait(1000) // Wait for results
+    
+    cy.smartuiSnapshot('homepage-after-search')
+  })
+})
+```
+
+## Common Use Cases
+
+### Responsive Testing
+
+```javascript
+describe('Responsive Tests', () => {
+  it('Desktop View', () => {
+    cy.viewport(1920, 1080)
+    cy.visit('https://www.lambdatest.com')
+    cy.smartuiSnapshot('homepage-desktop')
+  })
+
+  it('Tablet View', () => {
+    cy.viewport(768, 1024)
+    cy.visit('https://www.lambdatest.com')
+    cy.smartuiSnapshot('homepage-tablet')
+  })
+
+  it('Mobile View', () => {
+    cy.viewport(375, 667)
+    cy.visit('https://www.lambdatest.com')
+    cy.smartuiSnapshot('homepage-mobile')
+  })
+})
+```
+
+### Multi-Step Flow Testing
+
+```javascript
+describe('Checkout Flow', () => {
+  it('Complete Checkout Visual Test', () => {
+    cy.visit('https://example.com/checkout')
+    cy.smartuiSnapshot('checkout-step-1')
+    
+    cy.get('#next-step').click()
+    cy.wait(500)
+    cy.smartuiSnapshot('checkout-step-2')
+    
+    cy.get('#complete').click()
+    cy.wait(1000)
+    cy.smartuiSnapshot('checkout-complete')
+  })
+})
+```
+
+## CI/CD Integration
+
+### GitHub Actions Example
+
+```yaml
+name: Cypress SmartUI Tests
+
+on: [push, pull_request]
+
+jobs:
+  visual-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run Cypress with SmartUI
+        env:
+          PROJECT_TOKEN: ${{ secrets.SMARTUI_PROJECT_TOKEN }}
+        run: |
+          npx smartui exec -- npx cypress run --spec cypress/e2e/smartuiSDKLocal.cy.js --browser chrome --headed
+```
+
+## Troubleshooting
+
+### Issue: `cy.smartuiSnapshot is not a function`
+
+**Solution**: Ensure the driver is imported in `cypress/support/e2e.js`:
+```javascript
+import '@lambdatest/cypress-driver'
+```
+
+### Issue: Screenshots not captured
+
+**Solution**:
+1. Verify `PROJECT_TOKEN` is set
+2. Check Cypress version (requires >= 10.0.0)
+3. Ensure test completes successfully
+4. Wait a few moments for processing
+
+### Issue: `Cypress version mismatch`
+
+**Solution**: Install compatible Cypress version:
+```bash
+npm install cypress@^13
+```
+
+### Issue: Timeout errors
+
+**Solution**: Add waits before screenshots:
+```javascript
+cy.visit('https://example.com')
+cy.wait(2000) // Wait for page load
+cy.smartuiSnapshot('screenshot')
+```
+
+## Configuration Tips
+
+### Optimizing `smartui-web.json` for Cypress
+
+```json
+{
+  "web": {
+    "browsers": ["chrome", "firefox", "edge"],
+    "viewports": [
+      [1920, 1080],
+      [1366, 768],
+      [375, 667]
+    ],
+    "waitForPageRender": 30000,
+    "waitForTimeout": 2000
+  }
+}
+```
+
 ## View Results
 
 After running the tests, visit your SmartUI project dashboard to view the captured screenshots and compare them with baseline builds.
 
-## More Information
+## Additional Resources
 
-For detailed onboarding instructions, see the [SmartUI Cypress Onboarding Guide](https://www.lambdatest.com/support/docs/smartui-onboarding-cypress/).
+- [SmartUI Cypress Onboarding Guide](https://www.lambdatest.com/support/docs/smartui-onboarding-cypress/)
+- [Cypress Documentation](https://docs.cypress.io/)
+- [LambdaTest Cypress Documentation](https://www.lambdatest.com/support/docs/cypress-testing/)
+- [SmartUI Dashboard](https://smartui.lambdatest.com/)
+- [LambdaTest Community](https://community.lambdatest.com/)

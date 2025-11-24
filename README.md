@@ -164,11 +164,13 @@ describe('Test Case name', () => {
 
 ### **Step 6:** Execute the Tests on SmartUI Cloud
 
-Execute `visual regression tests` on SmartUI using the following commands
+Execute `visual regression tests` on SmartUI using the following command:
 
 ```bash
-npx smartui --config smartui-web.json exec -- npx cypress run --spec cypress/e2e/smartuiSDKLocal.cy.js --browser chrome --headed
+npx smartui exec -- npx cypress run --spec cypress/e2e/smartuiSDKLocal.cy.js --browser chrome --headed
 ```
+
+**Note**: The `--config` flag is optional if your config file is named `smartui-web.json` and located in the current directory. If you need to specify a different config file, use: `npx smartui --config <path> exec -- npx cypress run --spec cypress/e2e/smartuiSDKLocal.cy.js --browser chrome --headed`
 
 ##  View SmartUI Results
 

@@ -1,156 +1,78 @@
+# SmartUI SDK Sample for Cypress
 
+Welcome to the SmartUI SDK sample for Cypress. This repository demonstrates how to integrate SmartUI visual regression testing with Cypress.
 
-Welcome to the world of simplified visual testing with the SmartUI SDK. 
+## Repository Structure
 
-Integrating seamlessly into your existing Cypress testing suite, SmartUI SDK revolutionizes the way you approach visual regression testing. Our robust solution empowers you to effortlessly capture, compare, and analyze screenshots across a multitude of browsers and resolutions, ensuring comprehensive coverage and accuracy in your visual testing endeavors.
+```
+smartui-cypress-sdk-sample/
+├── cypress/
+│   └── e2e/
+│       └── smartuiSDKLocal.cy.js    # Test file
+├── cypress.config.js                # Cypress configuration
+├── package.json                     # Dependencies
+└── smartui-web.json                # SmartUI config (create with npx smartui config:create)
+```
 
-## Pre-requisites for running tests through SmartUI SDK
+## 1. Prerequisites and Environment Setup
 
-- Basic understanding of Command Line Interface and Cypress is required.
-- Login to [LambdaTest SmartUI](https://smartui.lambdatest.com/) with your credentials.
+### Prerequisites
 
-The following steps will guide you in running your first Visual Regression test on LambdaTest platform using SmartUI Cypress SDK integration.
+- Node.js installed
+- Cypress >= 10.0.0 (SmartUI SDK only supports Cypress versions >= 10.0.0)
+- Chrome browser (for Local tests)
 
-## Create a SmartUI Project
+### Environment Setup
 
-The first step is to create a project with the application in which we will combine all your builds run on the project. To create a SmartUI Project, follow these steps:
+**For Local:**
+```bash
+export PROJECT_TOKEN='your_project_token'
+```
 
-1. Go to [Projects page](https://smartui.lambdatest.com/)
-2. Click on the `new project` button
-3. Select the platform as **CLI** for executing your `SDK` tests.
-4. Add name of the project, approvers for the changes found, tags for any filter or easy navigation.
-5. Click on the **Submit**.
+## 2. Initial Setup and Dependencies
 
-## Steps to run your first test
-
-Once you have created a SmartUI Project, you can generate screenshots by running automation scripts. Follow the below steps to successfully generate screenshots
-
-### **Step 1:** Create/Update your test
-
-You can clone the sample repository to run `Cyoress` tests with `SmartUI` and use the `cypress/e2e/smartuiSDKLocal.cy.js` file.
+### Clone the Repository
 
 ```bash
 git clone https://github.com/LambdaTest/smartui-cypress-sdk-sample
 cd smartui-cypress-sdk-sample
 ```
-### **Step 2**: Install the Dependencies
 
-Install required NPM modules for `LambdaTest Smart UI Cypress SDK` in your **Frontend** project.
+### Install Dependencies
 
-```bash
-npm i @lambdatest/smartui-cli @lambdatest/cypress-driver cypress@v13
-```
-
-
-**SmartUI SDK only supports Cypress versions >= 10.0.0
-**
-
-
-### **Step 3:** Configure your Project Token
-
-Setup your project token show in the **SmartUI** app after, creating your project.
-
-<Tabs className="docs__val" groupId="language">
-<TabItem value="MacOS/Linux" label="MacOS/Linux" default>
+Install required NPM modules for LambdaTest Smart UI Cypress SDK:
 
 ```bash
-export PROJECT_TOKEN="123456#1234abcd-****-****-****-************"
+npm i @lambdatest/smartui-cli @lambdatest/cypress-driver cypress@^13
 ```
 
-</TabItem>
-<TabItem value="Windows" label="Windows - CMD">
+**Dependencies included:**
+- `@lambdatest/smartui-cli` - SmartUI CLI
+- `@lambdatest/cypress-driver` - SmartUI Cypress driver
+- `cypress@^13` - Cypress framework
 
-```bash
-set PROJECT_TOKEN="123456#1234abcd-****-****-****-************"
+### Configure Cypress Support File
+
+Add the following import to your `cypress/support/e2e.js` file:
+
+```javascript
+import '@lambdatest/cypress-driver'
 ```
 
-</TabItem>
-<TabItem value="Powershell" label="Windows-PS">
-
-```bash
-$Env:PROJECT_TOKEN="123456#1234abcd-****-****-****-************"
-```
-</TabItem>
-</Tabs>
-
-
-
-### **Step 4:** Create and Configure SmartUI Config
-
-You can now configure your project settings on using various available options to run your tests with the SmartUI integration. To generate the configuration file, please execute the following command:
+### Create SmartUI Configuration
 
 ```bash
 npx smartui config:create smartui-web.json
 ```
 
-Once, the configuration file will be created, you will be seeing the default configuration pre-filled in the configuration file:
+## 3. Steps to Integrate Screenshot Commands into Codebase
 
-```json title="/smartui-sdk-project/smartui-web.json"
-{
-  "web": {
-    "browsers": [
-      "chrome", 
-      "firefox",
-      "safari",
-      "edge",
-      // Add more browser configuration here
-    ],
-    "viewports": [
-      [
-        1920
-      ],
-      [
-        1366
-      ],
-      [
-        360
-      ]
-    ], // Full Page screenshots are captured by default
-    "waitForPageRender": 50000, // Optional (Should only be used in case of websites which take more than 30s to load)
-    "waitForTimeout": 1000 //Optional (Should only be used in case lazy-loading/async components are present )
+The SmartUI screenshot function is already implemented in the repository.
 
-  }
-}
-```
-Optional Keys in SmartUI configuration
-
-**waitForPageRender** - If one or more `URLs` in your script require a relatively higher amount of time to load, you may use the `waitForPageRender` key in the config file to make sure the screenshots are rendered correctly. Avoid using the same in case your websites render in less than 30 seconds as it might increase the execution time of your tests.
-
-
-**waitForTimeout** - If you are using any `async` components, you can add wait time for the page to load the DOM of your components. This can help avoid false-positive results for your tests. You can add the wait time in milliseconds, which might increase the execution time of your tests.
-
-#### For capturing viewport screenshots
-
-To capture a screenshot of the content currently visible in your viewport, rather than the entire page, it's important to define the viewport width in your configuration settings. Specify the desired width parameters as demonstrated in the following example to ensure that the screenshot encompasses only the viewport area.
-
-```json
-    "viewports": [
-      [
-        1920,
-        1080
-      ],
-      [
-        1366,
-        768
-      ],
-      [
-        360,
-        640
-      ]
-    ],
-```
-
-### **Step 5:** Adding SmartUI function to take screenshot
-
-- You can incorporate SmartUI into your custom `Cypress` test script, as shown below: 
-  
-
-```js
-/// <reference types="cypress" />
-
+**Test File** (`cypress/e2e/smartuiSDKLocal.cy.js`):
+```javascript
 describe('Test Case name', () => {
   beforeEach(() => {
-
     cy.visit('Required URL')
   })
 
@@ -158,13 +80,13 @@ describe('Test Case name', () => {
     cy.smartuiSnapshot('Screenshot Name');
   })
 })
-
-
 ```
 
-### **Step 6:** Execute the Tests on SmartUI Cloud
+**Note**: The code is already configured and ready to use. You can modify the URL and screenshot name if needed.
 
-Execute `visual regression tests` on SmartUI using the following command:
+## 4. Execution and Commands
+
+### Local Execution
 
 ```bash
 npx smartui exec -- npx cypress run --spec cypress/e2e/smartuiSDKLocal.cy.js --browser chrome --headed
@@ -172,8 +94,36 @@ npx smartui exec -- npx cypress run --spec cypress/e2e/smartuiSDKLocal.cy.js --b
 
 **Note**: The `--config` flag is optional if your config file is named `smartui-web.json` and located in the current directory. If you need to specify a different config file, use: `npx smartui --config <path> exec -- npx cypress run --spec cypress/e2e/smartuiSDKLocal.cy.js --browser chrome --headed`
 
-##  View SmartUI Results
+## Test Files
 
-You have successfully integrated SmartUI SDK with your Cypress tests. Visit your SmartUI project to view builds and compare snapshots between different test runs.
+### Test File (`cypress/e2e/smartuiSDKLocal.cy.js`)
 
-You can see the Smart UI dashboard to view the results. This will help you identify the Mismatches from the existing `Baseline` build and do the required visual testing.
+- Runs Cypress locally using Chrome
+- Requires Chrome browser installed
+- Takes screenshot with name: `Screenshot Name`
+
+## Configuration
+
+### Cypress Config (`cypress.config.js`)
+
+The Cypress configuration file is pre-configured for SmartUI integration.
+
+### SmartUI Config (`smartui-web.json`)
+
+Create the SmartUI configuration file using:
+```bash
+npx smartui config:create smartui-web.json
+```
+
+The default configuration includes:
+- Browsers: chrome, firefox, safari, edge
+- Viewports: 1920, 1366, 360 (full page screenshots by default)
+- Optional: `waitForPageRender` and `waitForTimeout` for slow-loading pages
+
+## View Results
+
+After running the tests, visit your SmartUI project dashboard to view the captured screenshots and compare them with baseline builds.
+
+## More Information
+
+For detailed onboarding instructions, see the [SmartUI Cypress Onboarding Guide](https://www.lambdatest.com/support/docs/smartui-onboarding-cypress/).

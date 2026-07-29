@@ -26,7 +26,7 @@ Clone and install dependencies:
 
 ```bash
 git clone https://github.com/LambdaTest/smartui-cypress-sdk-sample && cd smartui-cypress-sdk-sample
-npm i @lambdatest/smartui-cli @lambdatest/cypress-driver cypress@^13
+npm i @lambdatest/smartui-cli@latest @lambdatest/cypress-driver cypress@^13
 ```
 
 Set your credentials as environment variables.

@@ -17,5 +17,7 @@
 import './commands'
 import '@lambdatest/cypress-driver'
 
+Cypress.on('uncaught:exception', () => false)
+
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
